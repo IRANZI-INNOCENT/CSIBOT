@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hunger Coping Strategies Index (CSI)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            background: #ffeeff;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            padding-bottom: 9px;
+            font-weight: bold;
+            background-color: hsl(0, 0%, 77%);
+            padding: 10px;
+            color: hsl(235, 45%, 29%);
+            font-size: 32px;
+        }
+        hr {
+            border-width: 8px;
+            border-color: hsl(240, 100%, 50%);
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .card {
+            background: hsl(159, 100%, 95%);
+            padding: 10px;
+            width: 100%;
+            height: 57px;
+            margin: 5px;
+        }
+        .card input {
+            width: 100%;
+        }
+        .section-title {
+            text-align: center;
+            font-weight: bold;
+            padding-bottom: 5px;
+            background-color: hsl(0, 0%, 77%);
+            padding: 5px;
+            color: hsl(235, 45%, 29%);
+            font-size: 22px;
+        }
+        .output-container {
+            font-size: 30px;
+            font-weight: bold;
+            padding: 0px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hunger Coping Strategies Index (CSI)</h1>
+    <hr>
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+<df-messenger
+  intent="WELCOME"
+  chat-title="CSIBot"
+  agent-id="b40349b3-a6db-4290-879e-c15b269f8b39"
+  language-code="en"
+></df-messenger>
+    <div class="row">
+        <div class="card">
+            <label for="input-location">Location</label>
+            <input id="input-location" type="text">
+        </div>
+        <div class="card">
+            <label for="input-household-number">Household Number</label>
+            <input id="input-household-number" type="text">
+        </div>
+        <div class="card">
+            <label for="input-num-people">Number of People in Family</label>
+            <input id="input-num-people" type="number" min="0" max="30">
+        </div>
+    </div>
+
+    <h1 class="section-title">How many times did any of the following happen in your household (0-7)</h1>
+
+    <div class="row">
+        <div class="card">
+            <label for="input-strategy-a">Rely on less preferred and less expensive foods</label>
+            <input id="input-strategy-a" type="number" min="0" max="7" step="1">
+        </div>
+        <div class="card">
+            <label for="input-strategy-b">Borrow food, or rely on help from a friend or relative</label>
+            <input id="input-strategy-b" type="number" min="0" max="7" step="1">
+        </div>
+        <div class="card">
+            <label for="input-strategy-c">Purchase food on credit</label>
+            <input id="input-strategy-c" type="number" min="0" max="7" step="1">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="card">
+            <label for="input-strategy-d">Gather wild food, hunt, or harvest immature crops</label>
+            <input id="input-strategy-d" type="number" min="0" max="7" step="1">
+        </div>
+        <div class="card">
+            <label for="input-strategy-e">Consume seed stock held for next season</label>
+            <input id="input-strategy-e" type="number" min="0" max="7" step="1">
+        </div>
+        <div class="card">
+            <label for="input-strategy-f">Send household members to eat elsewhere</label>
+            <input id="input-strategy-f" type="number" min="0" max="7" step="1">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="card">
+            <label for="input-strategy-g">Send household members to beg</label>
+            <input id="input-strategy-g" type="number" min="0" max="7" step="1">
+        </div>
+        <div class="card">
+            <label for="input-strategy-h">Limit portion size at mealtime</label>
+            <input id="input-strategy-h" type="number" min="0" max="7" step="1">
+        </div>
+        <div class="card">
+            <label for="input-strategy-i">Restrict consumption by adults for small children to eat</label>
+            <input id="input-strategy-i" type="number" min="0" max="7" step="1">
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="card">
+            <label for="input-strategy-j">Feed working members at the expense of non-working members</label>
+            <input id="input-strategy-j" type="number" min="0" max="7" step="1">
+        </div>
+        <div class="card">
+            <label for="input-strategy-k">Ration the money you have and buy prepared food</label>
+            <input id="input-strategy-k" type="number" min="0" max="7" step="1">
+        </div>
+        <div class="card">
+            <label for="input-strategy-l">Reduce number of meals eaten in a day</label>
+            <input id="input-strategy-l" type="number" min="0" max="7" step="1">
+        </div>
+    </div>
+
+    <br>
+
+    <div id="output-container" class="output-container"></div>
+
+    <script>
+        function calculateWeightedScore(location, householdNumber, numPeople, rawScores) {
+            const severityWeights = {
+                'a': 1, 'b': 2, 'c': 2, 'd': 4, 'e': 3, 'f': 2,
+                'g': 4, 'h': 1, 'i': 2, 'j': 2, 'k': 2, 'l': 4
+            };
+            let totalScore = 0;
+            for (const key in rawScores) {
+                totalScore += rawScores[key] * severityWeights[key];
+            }
+            return {
+                'Location': location,
+                'Household Number': householdNumber,
+                'Total Weighted Score': totalScore
+            };
+        }
+
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                const location = document.getElementById('input-location').value;
+                const householdNumber = document.getElementById('input-household-number').value;
+                const numPeople = document.getElementById('input-num-people').value;
+
+                const rawScores = {
+                    'a': parseInt(document.getElementById('input-strategy-a').value) || 0,
+                    'b': parseInt(document.getElementById('input-strategy-b').value) || 0,
+                    'c': parseInt(document.getElementById('input-strategy-c').value) || 0,
+                    'd': parseInt(document.getElementById('input-strategy-d').value) || 0,
+                    'e': parseInt(document.getElementById('input-strategy-e').value) || 0,
+                    'f': parseInt(document.getElementById('input-strategy-f').value) || 0,
+                    'g': parseInt(document.getElementById('input-strategy-g').value) || 0,
+                    'h': parseInt(document.getElementById('input-strategy-h').value) || 0,
+                    'i': parseInt(document.getElementById('input-strategy-i').value) || 0,
+                    'j': parseInt(document.getElementById('input-strategy-j').value) || 0,
+                    'k': parseInt(document.getElementById('input-strategy-k').value) || 0,
+                    'l': parseInt(document.getElementById('input-strategy-l').value) || 0
+                };
+
+                const result = calculateWeightedScore(location, householdNumber, numPeople, rawScores);
+                const outputStr = `Location: ${result['Location']}, Household Number: ${result['Household Number']}, Total Weighted Score: ${result['Total Weighted Score']}`;
+                document.getElementById('output-container').innerText = outputStr;
+            });
+        });
+    </script>
+</body>
+</html>
